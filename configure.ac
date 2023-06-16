@@ -1,9 +1,9 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.62)
+AC_PREREQ([2.71])
 LT_PREREQ(2.4)
 
-AC_INIT(SoX, 14.4.3git, sox-devel@lists.sourceforge.net)
+AC_INIT([SoX],[14.4.3git],[sox-devel@lists.sourceforge.net])
 
 dnl Increase version when binary compatibility with previous version is broken
 SHLIB_VERSION=3:0:0
@@ -41,7 +41,6 @@ AC_C_BIGENDIAN
 AC_C_INLINE
 
 dnl Checks for header files.
-AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h unistd.h byteswap.h sys/ioctl.h sys/stat.h sys/time.h sys/timeb.h sys/types.h sys/utsname.h termios.h glob.h fenv.h)
 
 dnl Checks for library functions.

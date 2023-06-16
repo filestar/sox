@@ -51,7 +51,7 @@
 # ./configure CFLAGS="-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk" LDFLAGS="-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk" --enable-shared --disable-static;make;sudo make install
 #
 
-MacOSXSDK=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk
+MacOSXSDK=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.sdk
 
 [ ! -x configure ] && autoreconf -i
 
@@ -62,13 +62,13 @@ MacOSXSDK=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/D
 if [ $# -ne 0 -o ! -r Makefile ]; then
   ./configure \
     --disable-shared \
-    --with-libltdl \
+    --with-libltdl=no \
     --enable-dl-lame --enable-dl-mad \
     --enable-dl-amrnb --enable-dl-amrwb \
     CPP=cpp\
-    CPPFLAGS="-I/usr/local/10.9/include -I/usr/local/include" \
+    CPPFLAGS="-I/usr/local/include" \
     CFLAGS="-isysroot ${MacOSXSDK}" \
-    LDFLAGS="-L/usr/local/10.9/lib -isysroot ${MacOSXSDK}" \
+    LDFLAGS="-isysroot ${MacOSXSDK}" \
     $*
 fi
 
