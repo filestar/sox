@@ -351,11 +351,43 @@ static int startread(sox_format_t * ft)
     memset(sf->sf_info, 0, sizeof (*sf->sf_info));
     sf->sf_file = sf->sf_open(ft->filename, SFM_READ, sf->sf_info);
     drain_log_buffer(ft);
+
+    // At this point, we don't actually know why the SD2 file failed to open. But maybe it was
+    // because it is missing its resource fork. In this case, the best we can do is guess the
+    // format. See https://github.com/libsndfile/libsndfile/blob/master/docs/FAQ.md#q13--why-cant-libsndfile-open-this-sound-designer-ii-sd2-file-q013
+    // for more info.
+    if (sf->sf_file == NULL) {
+      ft->signal.channels = 1;
+      sox_uint64_t filelength = lsx_filelength(ft);
+      
+      ft->signal.rate = 48000.0;
+
+      sf->sf_info->format = SF_FORMAT_RAW | SF_ENDIAN_BIG;
+
+      if (filelength % 2 == 0)
+      {
+        ft->signal.precision = 16;
+        sf->sf_info->format |= SF_FORMAT_PCM_16;
+        sf->sf_info->frames = filelength / 2;
+      }
+      else
+      {
+        // If the file length is odd, then I guess the samples must be 8 bits.
+        ft->signal.precision = 8;
+        sf->sf_info->format |= SF_FORMAT_PCM_S8;
+        sf->sf_info->frames = filelength;
+      }
+
+      sf->sf_info->channels = ft->signal.channels;
+      sf->sf_info->samplerate = (int)ft->signal.rate;
+
+      sf->sf_file = sf->sf_open_virtual(&vio, SFM_READ, sf->sf_info, ft);
+      drain_log_buffer(ft);
+    }
   } else {
     sf->sf_file = sf->sf_open_virtual(&vio, SFM_READ, sf->sf_info, ft);
     drain_log_buffer(ft);
   }
-
 
   if (sf->sf_file == NULL) {
     memset(ft->sox_errstr, 0, sizeof(ft->sox_errstr));
