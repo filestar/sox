@@ -346,8 +346,10 @@ static int startread(sox_format_t * ft)
   if (start(ft) == SOX_EOF)
       return SOX_EOF;
 
+  const char *extension = lsx_find_file_extension(ft->filename);
+
   // The SD2 format relies on a resource fork, which cannot be supported with virtual IO.
-  if (strcmp(lsx_find_file_extension(ft->filename), "sd2") == 0) {
+  if (extension && strcasecmp(extension, "sd2") == 0) {
     memset(sf->sf_info, 0, sizeof (*sf->sf_info));
     sf->sf_file = sf->sf_open(ft->filename, SFM_READ, sf->sf_info);
     drain_log_buffer(ft);
